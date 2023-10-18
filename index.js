@@ -23,8 +23,24 @@ module.exports = {
 
   treeForServiceWorker(swTree, appTree) {
     var options = this.app.options['asset-cache'];
+    
+    this._appendRootURLIfMissing(options);
     var assetMapFile = new AssetMap([appTree], options);
-
+    
     return mergeTrees([swTree, assetMapFile]);
+  },
+
+  _appendRootURLIfMissing(options) {
+    var rootURL = this.app.options.rootURL || '';
+
+    if (!rootURL) {
+      return;
+    }
+
+    if (!options.prepend || options.prepend.endsWith(rootURL)) {
+      return;
+    }
+    
+    options.prepend = options.prepend.slice(0, -1) + rootURL;
   }
 };
